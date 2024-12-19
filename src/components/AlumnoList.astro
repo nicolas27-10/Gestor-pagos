@@ -1,0 +1,34 @@
+---
+export let alumnos = [
+  {
+    name: "Juan Pérez",
+    email: "juan.perez@example.com",
+    phone: "123456789",
+  },
+  {
+    name: "María Gómez",
+    email: "maria.gomez@example.com",
+    phone: "987654321",
+  },
+  {
+    name: "Carlos López",
+    email: "carlos.lopez@example.com",
+    phone: null, // Este alumno no tiene teléfono
+  },
+];
+---
+
+<ul class="bg-white shadow-md rounded-md p-4">
+  <h2 class="text-xl font-semibold mb-4">Lista de Alumnos</h2>
+  {alumnos.length > 0 ? (
+    alumnos.map((alumno) => (
+      <li class="border-b last:border-none py-2">
+        <p class="font-medium">{alumno.name}</p>
+        <p class="text-gray-600 text-sm">{alumno.email}</p>
+        <p class="text-gray-600 text-sm">{alumno.phone || "Sin teléfono"}</p>
+      </li>
+    ))
+  ) : (
+    <p class="text-gray-600">No hay alumnos registrados.</p>
+  )}
+</ul>

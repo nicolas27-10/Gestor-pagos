@@ -1,0 +1,51 @@
+<form id="alumnoForm" class="bg-white shadow-md rounded-md p-4 min-w-96">
+    <h2 class="text-xl font-semibold mb-4">Registrar Alumno</h2>
+    
+    <div class="mb-4">
+      <label for="name" class="block text-gray-700">Nombre:</label>
+      <input type="text" id="name" name="name" class="w-full border border-gray-300 rounded-md p-2" required />
+    </div>
+    
+    <div class="mb-4">
+      <label for="email" class="block text-gray-700">Email:</label>
+      <input type="email" id="email" name="email" class="w-full border border-gray-300 rounded-md p-2" required />
+    </div>
+    
+    <div class="mb-4">
+      <label for="phone" class="block text-gray-700">Teléfono:</label>
+      <input type="tel" id="phone" name="phone" class="w-full border border-gray-300 rounded-md p-2" />
+    </div>
+    
+    <button
+      type="submit"
+      class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+    >
+      Guardar
+    </button>
+  </form>
+  
+  <script>
+    // Referencia al formulario
+    const form = document.getElementById('alumnoForm') as HTMLFormElement;
+    
+    // Evento onsubmit
+    if (form) {
+      form.onsubmit = (event) => {
+      // Evitar recarga de la página
+      event.preventDefault();
+      
+      // Capturar datos del formulario
+      const formData = new FormData(event.target as HTMLFormElement);
+      const data = Object.fromEntries(formData.entries());
+      
+      // Mostrar los datos en consola (puedes enviarlos a Firebase o un servidor aquí)
+      console.log('Datos del formulario:', data);
+      
+      // Ejemplo: Limpiar el formulario después de enviarlo
+      form.reset();
+      };
+    }
+  </script>
+  
+
+
