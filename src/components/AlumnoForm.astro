@@ -1,21 +1,92 @@
-<form id="alumnoForm" class="bg-white shadow-md rounded-md p-4 min-w-96">
+---
+import { addAlumno } from "../firebase/firebaseService";
+
+import ModalExitoAlumno from "../components/ModalExitoAlumno.astro";
+---
+
+<ModalExitoAlumno />
+<div class="">
+  <button
+    id="toggleFormButton"
+    class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition mb-4"
+  >
+    Registrar Alumno
+  </button>
+
+  <form id="alumnoForm" class="bg-white shadow-md rounded-md p-4 hidden">
     <h2 class="text-xl font-semibold mb-4">Registrar Alumno</h2>
-    
+
     <div class="mb-4">
       <label for="name" class="block text-gray-700">Nombre:</label>
-      <input type="text" id="name" name="name" class="w-full border border-gray-300 rounded-md p-2" required />
+      <input
+        type="text"
+        id="name"
+        name="name"
+        class="w-full border border-gray-300 rounded-md p-2"
+        required
+      />
     </div>
-    
+
+    <div class="mb-4">
+      <label for="grade" class="block text-gray-700">Grado:</label>
+      <select
+        name="grade"
+        id="grade"
+        class="w-full border border-gray-300 rounded-md p-2 hover:border-gray-900"
+        required
+      >
+        <option value="8vo Kyu">8vo Kyu</option>
+        <option value="7mo Kyu">7mo Kyu</option>
+        <option value="6to Kyu">6to Kyu</option>
+        <option value="5to Kyu">5to Kyu</option>
+        <option value="4to Kyu">4to Kyu</option>
+        <option value="3er Kyu">3er Kyu</option>
+        <option value="2do Kyu">2do Kyu</option>
+        <option value="1er Kyu">1er Kyu</option>
+        <option value="1er Dan">1er Dan</option>
+        <option value="2do Dan">2do Dan</option>
+        <option value="3er Dan">3er Dan</option>
+        <option value="4to Dan">4to Dan</option>
+        <option value="5to Dan">5to Dan</option>
+        <option value="6to Dan">6to Dan</option>
+        <option value="7mo Dan">7mo Dan</option>
+        <option value="8vo Dan">8vo Dan</option>
+      </select>
+    </div>
+
     <div class="mb-4">
       <label for="email" class="block text-gray-700">Email:</label>
-      <input type="email" id="email" name="email" class="w-full border border-gray-300 rounded-md p-2" required />
+      <input
+        type="email"
+        id="email"
+        name="email"
+        class="w-full border border-gray-300 rounded-md p-2"
+      />
     </div>
-    
+
     <div class="mb-4">
       <label for="phone" class="block text-gray-700">Teléfono:</label>
-      <input type="tel" id="phone" name="phone" class="w-full border border-gray-300 rounded-md p-2" />
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        class="w-full border border-gray-300 rounded-md p-2"
+      />
     </div>
-    
+
+    <div class="mb-4">
+      <label for="status" class="block text-gray-700">Estado:</label>
+      <select
+        name="status"
+        id="status"
+        class="w-full border border-gray-300 rounded-md p-2 hover:border-gray-900"
+        required
+      >
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+    </div>
+
     <button
       type="submit"
       class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
@@ -23,29 +94,83 @@
       Guardar
     </button>
   </form>
-  
-  <script>
-    // Referencia al formulario
-    const form = document.getElementById('alumnoForm') as HTMLFormElement;
-    
-    // Evento onsubmit
-    if (form) {
-      form.onsubmit = (event) => {
+</div>
+
+<script type="">
+  import { addAlumno } from "../firebase/firebaseService";
+
+  // Referencia al formulario
+  const form = document.getElementById("alumnoForm");
+  const toggleButton = document.getElementById("toggleFormButton");
+  const successModal = document.getElementById("successModal");
+  const closeModalButton = document.getElementById("closeModal");
+
+  // Evento para mostrar/ocultar el formulario
+  toggleButton.addEventListener("click", () => {
+    if (form.classList.contains("hidden")) {
+      form.classList.remove("hidden");
+    } else {
+      form.classList.add("hidden");
+    }
+  });
+
+  // Evento onsubmit
+  if (form) {
+    form.addEventListener("submit", async (event) => {
       // Evitar recarga de la página
       event.preventDefault();
-      
+
       // Capturar datos del formulario
-      const formData = new FormData(event.target as HTMLFormElement);
+      const formData = new FormData(event.target);
       const data = Object.fromEntries(formData.entries());
-      
+
       // Mostrar los datos en consola (puedes enviarlos a Firebase o un servidor aquí)
-      console.log('Datos del formulario:', data);
-      
+      console.log("Datos del formulario:", formData.get("name"), data.name);
+
+      const nombre = data.name;
+      const grado = data.grade;
+      const email = data.email;
+      const telefono = data.phone;
+      const status = data.status;
+
+      console.log(
+        "Datos del formulario:",
+        nombre,
+        grado,
+        email,
+        telefono,
+        status,
+      );
+
+      try {
+        await addAlumno(nombre, grado, email, telefono, status);
+        console.log("Alumno agregado exitosamente");
+
+        form.classList.add("hidden");
+        // Mostrar el modal de éxito
+        successModal.classList.remove("hidden");
+        successModal.classList.add("flex");
+
+      } catch (error) {
+        console.error("Error al agregar el alumno:", error);
+      }
       // Ejemplo: Limpiar el formulario después de enviarlo
       form.reset();
-      };
-    }
-  </script>
-  
+    });
+  }
 
+  closeModalButton.addEventListener("click", () => {
+    successModal.classList.add("hidden");
+    successModal.classList.remove("flex");
+  });
 
+  // addAlumno(
+  //       "Cristobal Inayado",
+  //       "2do Dan",
+  //       "cristobal.i.carvajal@gmail.com",
+  //       "9 6161 9091",
+  //       "Activo",
+  //     );
+
+  // Evento para cerrar el modal
+</script>

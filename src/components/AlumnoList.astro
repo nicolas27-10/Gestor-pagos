@@ -1,32 +1,72 @@
 ---
-export let alumnos = [
-  {
-    name: "Juan Pérez",
-    email: "juan.perez@example.com",
-    phone: "123456789",
-  },
-  {
-    name: "María Gómez",
-    email: "maria.gomez@example.com",
-    phone: "987654321",
-  },
-  {
-    name: "Carlos López",
-    email: "carlos.lopez@example.com",
-    phone: null, // Este alumno no tiene teléfono
-  },
-];
+// Importar la función desde firebaseService
+import { getAlumnos } from '../firebase/firebaseService';
+import type { Alumno } from '../firebase/firebaseService'; // Asegúrate de que la ruta sea correcta
+
+let alumnos: Alumno[] = [];
+
+// Recuperar los alumnos al cargar el componente
+try {
+    alumnos = await getAlumnos();
+} catch (error) {
+    console.error('Error al recuperar los alumnos:', error);
+}
+
+
+
+// export let alumnos = [
+//   {
+//     name: "Juan Pérez",
+//     grade: "1er Kyu",
+//     email: "juan.perez@example.com",
+//     phone: "123456789",
+//   },
+//   {
+//     name: "María Gómez",
+//     grade: "2do Kyu",
+//     email: "maria.gomez@example.com",
+//     phone: "987654321",
+//   },
+//   {
+//     name: "Carlos López",
+//     grade: "1er Dan",
+//     email: "carlos.lopez@example.com",
+//     phone: null, // Este alumno no tiene teléfono
+//   },
+// ];
 ---
 
 <ul class="bg-white shadow-md rounded-md p-4">
-  <h2 class="text-xl font-semibold mb-4">Lista de Alumnos</h2>
+  <h2 class="text-xl font-semibold mb-2">Lista de Alumnos ({alumnos.length})</h2>
+  <h4 class="text-lg font-normal mb-4">Alumnos Activos ({alumnos.filter(alumno => alumno.status === "Activo").length})</h4>
   {alumnos.length > 0 ? (
     alumnos.map((alumno) => (
-      <li class="border-b last:border-none py-2">
-        <p class="font-medium">{alumno.name}</p>
-        <p class="text-gray-600 text-sm">{alumno.email}</p>
-        <p class="text-gray-600 text-sm">{alumno.phone || "Sin teléfono"}</p>
+    <div class="flex justify-between items-center mx-auto px-2 md:space-x-0 space-x-2">
+      <li class="border-b last:border-none py-2 text-ellipsis overflow-auto flex-grow">
+        <p class="font-medium">{alumno.nombre}</p>
+        <p class="font-medium">{alumno.grado}</p>
+        <p class="text-gray-600 text-sm">{alumno.email || "Sin correo"}</p>
+        <p class="text-gray-600 text-sm">{alumno.telefono || "Sin teléfono"}</p>
+        <p class="text-gray-600 text-sm">{alumno.status}</p>
       </li>
+
+
+        <div class="flex flex-col md:flex-row px-2 space-y-2 md:space-y-0 md:space-x-2">
+          <button
+          type="submit"
+          class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+          >
+            Editar
+          </button>
+
+          <button
+          type="submit"
+          class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
     ))
   ) : (
     <p class="text-gray-600">No hay alumnos registrados.</p>

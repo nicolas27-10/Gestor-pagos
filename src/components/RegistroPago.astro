@@ -1,0 +1,140 @@
+---
+export let alumnos = [
+    { name: "Juan Pérez", status: "Pagado", amount: 48000 },
+    { name: "María Gómez", status: "Pendiente", amount: 0 },
+    { name: "Carlos López", status: "Atrasado", amount: 0 },
+];
+
+export let onSubmitPayment = () => {};
+---
+
+<section class="bg-gray-100 p-4 rounded-md shadow-md">
+    <h2 class="text-2xl font-semibold mb-4">Gestión de Pagos</h2>
+
+    <!-- Componente para gestionar pagos -->
+    <ul class="bg-white shadow-md rounded-md p-4">
+        <h2 class="text-xl font-semibold mb-4">Estado de Pagos</h2>
+        {
+            alumnos.map((alumno) => (
+                <li class="border-b last:border-none py-2 flex justify-between items-center">
+                    <div>
+                        <p class="font-medium">{alumno.name}</p>
+                        <p class="text-gray-600 text-sm">
+                            Estado: {alumno.status}
+                        </p>
+                    </div>
+                    {alumno.status !== "Pagado" && (
+                        <button
+                            class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                            data-name={alumno.name}
+                        >
+                            Registrar Pago
+                        </button>
+                    )}
+                </li>
+            ))
+        }
+    </ul>
+
+    <!-- Formulario para registrar un pago -->
+    <form
+        id="paymentForm"
+        class="bg-white shadow-md rounded-md p-4 hidden mt-8"
+        onsubmit="handleSubmit"
+    >
+        <h2 class="text-xl font-semibold mb-4">Registrar Pago</h2>
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700"
+                >Nombre del Alumno:</label
+            >
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="w-full border border-gray-300 rounded-md p-2"
+                readonly
+            />
+        </div>
+        <div class="mb-4">
+            <label for="amount" class="block text-gray-700"
+                >Monto a Pagar:</label
+            >
+            <input
+                type="number"
+                id="amount"
+                name="amount"
+                class="w-full border border-gray-300 rounded-md p-2"
+                required
+            />
+        </div>
+        <div class="flex justify-between">
+            <button
+                type="submit"
+                class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition"
+            >
+                Guardar Pago
+            </button>
+            <button
+                type="button"
+                id="cancelButton"
+                class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+            >
+                Cancelar
+            </button>
+        </div>
+    </form>
+</section>
+
+<script>
+    export let onSubmitPayment: (data: any) => void;
+    document.addEventListener("DOMContentLoaded", () => {
+        const paymentForm = document.querySelector("#paymentForm");
+        const buttons = document.querySelectorAll("[data-name]");
+        const cancelButton = document.querySelector("#cancelButton");
+
+        buttons.forEach((button) => {
+            button.addEventListener("click", (event) => {
+                const name = (button as HTMLElement).dataset.name;
+                if (paymentForm) {
+                    paymentForm.classList.remove("hidden");
+                }
+                const nameInput = paymentForm?.querySelector("#name");
+                if (nameInput) {
+                    if (name) {
+                        (nameInput as HTMLInputElement).value = name;
+                    }
+                }
+            });
+        });
+
+        // Función para cerrar el formulario
+        if (cancelButton) {
+            cancelButton.addEventListener("click", () => {
+                if (paymentForm) {
+                    paymentForm.classList.add("hidden");
+                    const nameInput = paymentForm.querySelector("#name");
+                    const amountInput = paymentForm.querySelector("#amount");
+                    if (nameInput) {
+                        (nameInput as HTMLInputElement).value = "";
+                    }
+                    if (amountInput) {
+                        (amountInput as HTMLInputElement).value = "";
+                    }
+                }
+            });
+        }
+    });
+
+    function handleSubmit(event: Event) {
+        event.preventDefault();
+        const formData = new FormData(event.target as HTMLFormElement);
+        const data = Object.fromEntries(formData.entries());
+        onSubmitPayment(data);
+
+        // Ocultar el formulario después de guardar
+        const paymentForm = document.querySelector("#paymentForm");
+        if (paymentForm) {
+            paymentForm.classList.add("hidden");
+        }
+    }
+</script>
