@@ -13,6 +13,13 @@ import ModalExitoAlumno from "../components/ModalExitoAlumno.astro";
     Registrar Alumno
   </button>
 
+  <button
+    id="GenerarInforme"
+    class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition mb-4"
+  >
+    Generar Informe
+  </button>
+
   <form id="alumnoForm" class="bg-white shadow-md rounded-md p-4 hidden">
     <h2 class="text-xl font-semibold mb-4">Registrar Alumno</h2>
 
@@ -151,6 +158,8 @@ import ModalExitoAlumno from "../components/ModalExitoAlumno.astro";
         successModal.classList.remove("hidden");
         successModal.classList.add("flex");
 
+        // Recargar la página
+        window.location.reload();
       } catch (error) {
         console.error("Error al agregar el alumno:", error);
       }
@@ -162,6 +171,19 @@ import ModalExitoAlumno from "../components/ModalExitoAlumno.astro";
   closeModalButton.addEventListener("click", () => {
     successModal.classList.add("hidden");
     successModal.classList.remove("flex");
+  });
+
+  // Generar Informe
+  import { generarInformeAlumnos } from "../firebase/firebaseService";
+  const generarInforme = document.getElementById("GenerarInforme");
+  generarInforme.addEventListener("click", async () => {
+    try {
+    // Llamar a la función para generar el informe
+    await generarInformeAlumnos();
+    console.log("Informe generado exitosamente.");
+  } catch (error) {
+    console.error("Error al generar el informe:", error);
+  }
   });
 
   // addAlumno(

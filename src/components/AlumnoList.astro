@@ -1,74 +1,268 @@
 ---
 // Importar la función desde firebaseService
-import { getAlumnos } from '../firebase/firebaseService';
-import type { Alumno } from '../firebase/firebaseService'; // Asegúrate de que la ruta sea correcta
+import { getAlumnos } from "../firebase/firebaseService";
+import type { Alumno } from "../firebase/firebaseService"; // Asegúrate de que la ruta sea correcta
+import ModalEditarAlumno from "./modal/ModalEditarAlumno.astro";
+import ModalExitoDeleteAlumno from "./modal/ModalExitoDeleteAlumno.astro";
+import ModalExitoEditAlumno from "./modal/ModalExitoEditAlumno.astro";
 
 let alumnos: Alumno[] = [];
 
 // Recuperar los alumnos al cargar el componente
 try {
-    alumnos = await getAlumnos();
+  alumnos = await getAlumnos();
 } catch (error) {
-    console.error('Error al recuperar los alumnos:', error);
+  console.error("Error al recuperar los alumnos:", error);
 }
 
 
-
-// export let alumnos = [
-//   {
-//     name: "Juan Pérez",
-//     grade: "1er Kyu",
-//     email: "juan.perez@example.com",
-//     phone: "123456789",
-//   },
-//   {
-//     name: "María Gómez",
-//     grade: "2do Kyu",
-//     email: "maria.gomez@example.com",
-//     phone: "987654321",
-//   },
-//   {
-//     name: "Carlos López",
-//     grade: "1er Dan",
-//     email: "carlos.lopez@example.com",
-//     phone: null, // Este alumno no tiene teléfono
-//   },
-// ];
 ---
+<ModalEditarAlumno />
+<ModalExitoEditAlumno />
+<ModalExitoDeleteAlumno />
 
 <ul class="bg-white shadow-md rounded-md p-4">
-  <h2 class="text-xl font-semibold mb-2">Lista de Alumnos ({alumnos.length})</h2>
-  <h4 class="text-lg font-normal mb-4">Alumnos Activos ({alumnos.filter(alumno => alumno.status === "Activo").length})</h4>
-  {alumnos.length > 0 ? (
-    alumnos.map((alumno) => (
-    <div class="flex justify-between items-center mx-auto px-2 md:space-x-0 space-x-2">
-      <li class="border-b last:border-none py-2 text-ellipsis overflow-auto flex-grow">
-        <p class="font-medium">{alumno.nombre}</p>
-        <p class="font-medium">{alumno.grado}</p>
-        <p class="text-gray-600 text-sm">{alumno.email || "Sin correo"}</p>
-        <p class="text-gray-600 text-sm">{alumno.telefono || "Sin teléfono"}</p>
-        <p class="text-gray-600 text-sm">{alumno.status}</p>
-      </li>
+  <h2 class="text-xl font-semibold mb-2">
+    Lista de Alumnos ({alumnos.length})
+  </h2>
+  <h4 class="text-lg font-normal mb-4">
+    Alumnos Activos ({
+      alumnos.filter((alumno) => alumno.status === "Activo").length
+    })
+  </h4>
+  {
+    alumnos.length > 0 ? (
+      alumnos.map((alumno) => (
+        <div class="flex justify-between items-center mx-auto px-2 md:space-x-0 space-x-2">
+          <li class="border-b last:border-none py-2 text-ellipsis overflow-auto flex-grow">
+            <p class="font-medium">{alumno.nombre}</p>
+            <p class="font-medium">{alumno.grado}</p>
+            <p class="text-gray-600 text-sm">{alumno.email || "Sin correo"}</p>
+            <p class="text-gray-600 text-sm">
+              {alumno.telefono || "Sin teléfono"}
+            </p>
+            <p class="text-gray-600 text-sm">{alumno.status}</p>
+          </li>
 
+          <div class="flex flex-col md:flex-row px-2 space-y-2 md:space-y-0 md:space-x-2">
+            <button
+              type="button"
+              data-action="edit"
+              data-alumno-id={alumno.id}
+              class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+            >
+              Editar
+            </button>
 
-        <div class="flex flex-col md:flex-row px-2 space-y-2 md:space-y-0 md:space-x-2">
-          <button
-          type="submit"
-          class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
-          >
-            Editar
-          </button>
-
-          <button
-          type="submit"
-          class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
-          >
-            Eliminar
-          </button>
+            <button
+              type="button"
+              data-action="delete"
+              data-alumno-id={alumno.id}
+              class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+            >
+              Eliminar
+            </button>
+          </div>
         </div>
-      </div>
-    ))
-  ) : (
-    <p class="text-gray-600">No hay alumnos registrados.</p>
-  )}
+      ))
+    ) : (
+      <p class="text-gray-600">No hay alumnos registrados.</p>
+    )
+  }
 </ul>
+
+<script>
+  import {
+    getAlumnoById,
+    updateAlumno,
+    deleteAlumno,
+  } from "../firebase/firebaseService";
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const editModal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+    const successEditModal = document.getElementById("successEditModal");
+    let currentAlumnoId: string | null = null; // Variable para almacenar el ID del alumno que se está editando
+
+    // Abrir modal de edición y rellenar datos
+    document.querySelectorAll('[data-action="edit"]').forEach((button) => {
+      button.addEventListener("click", async (e) => {
+        const target = e.target as HTMLElement;
+        if (target) {
+          console.log(`Editando alumno con ID: ${currentAlumnoId}`);
+        }
+        if (target) {
+          currentAlumnoId = target.dataset.alumnoId ?? null; // Guardar el ID en la variable
+        }
+        console.log(`Editando alumno con ID: ${currentAlumnoId}`);
+
+        // Simular obtener datos del alumno desde la base de datos o una lista local
+        const alumno = currentAlumnoId
+          ? await getAlumnoById(currentAlumnoId)
+          : null; // Implementa esta función según tu caso
+        if (alumno) {
+          // Rellenar el formulario con los datos del alumno
+          const editNombre = document.getElementById("editNombre");
+          const editGrado = document.getElementById("editGrado");
+          const editEmail = document.getElementById("editEmail");
+          const editTelefono = document.getElementById("editTelefono");
+          const editStatus = document.getElementById("editStatus");
+
+          if (editNombre)
+            (editNombre as HTMLInputElement).value = alumno.nombre;
+          if (editGrado) (editGrado as HTMLInputElement).value = alumno.grado;
+          if (editEmail) (editEmail as HTMLInputElement).value = alumno.email;
+          if (editTelefono)
+            (editTelefono as HTMLInputElement).value = alumno.telefono;
+          if (editStatus)
+            (editStatus as HTMLInputElement).value = alumno.status;
+        }
+
+        // Abrir modal
+        if (editModal) {
+          editModal.classList.remove("hidden");
+          editModal.classList.add("flex");
+        }
+
+      });
+    });
+
+    // Evento para guardar los cambios
+    if (editForm) {
+      editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        console.log("Guardando cambios...");
+
+        // Cerrar el modal
+        if (editModal) {
+          editModal.classList.remove("flex");
+          editModal.classList.add("hidden");
+        }
+        // Obtener datos del formulario
+        const formData = new FormData(editForm as HTMLFormElement);
+        const updatedData = Object.fromEntries(formData.entries());
+        console.log("Datos actualizados:", updatedData);
+
+        if (currentAlumnoId) {
+          try {
+            // Actualizar en Firebase
+            await updateAlumno(currentAlumnoId, updatedData);
+            console.log("Alumno actualizado correctamente");
+
+            // Mostrar el modal de éxito
+            if (successEditModal) {
+              successEditModal.classList.remove("hidden");
+              successEditModal.classList.add("flex");
+            }
+          } catch (error) {
+            console.error("Error al actualizar el alumno:", error);
+            alert("Ocurrió un error al guardar los cambios.");
+          }
+        }
+      });
+    }
+
+    // Cerrar modal al hacer clic en el botón "Cancelar"
+    const btnCloseEdit = document.getElementById("btnCloseEdit");
+    const btnCloseSuccessEdit = document.getElementById("closeEditModal");
+
+    if (btnCloseSuccessEdit) {
+      btnCloseSuccessEdit.addEventListener("click", () => {
+        if (successEditModal) {
+          successEditModal.classList.remove("flex");
+          successEditModal.classList.add("hidden");
+        }
+        // Recargar la página
+        window.location.reload();
+      });
+    }
+
+    if (btnCloseEdit) {
+      btnCloseEdit.addEventListener("click", () => {
+        if (editModal) {
+          editModal.classList.remove("flex");
+          editModal.classList.add("hidden");
+        }
+      });
+    }
+
+    // Eliminar alumno
+    const deleteModal = document.getElementById("deleteModal");
+    const btnCloseDelete = document.getElementById("btnCloseDelete");
+    const btnConfirmDelete = document.querySelector("[data-confirm='delete']");
+    const successDeleteModal = document.getElementById("successDeleteModal");
+
+    document.querySelectorAll('[data-action="delete"]').forEach((button) => {
+      button.addEventListener("click", async (e) => {
+        const target = e.target as HTMLElement;
+        if (target) {
+          console.log(`Eliminando alumno con ID: ${target.dataset.alumnoId}`);
+        }
+        if (target) {
+          currentAlumnoId = target.dataset.alumnoId ?? null; // Guardar el ID en la variable
+        }
+
+        // Abrir el modal
+        if (deleteModal) {
+          deleteModal.classList.add("flex");
+          deleteModal.classList.remove("hidden");
+        }
+        
+      });
+
+      // Confirmar la eliminación
+      if (btnConfirmDelete) {
+        btnConfirmDelete.addEventListener("click", async () => {
+          if (currentAlumnoId) {
+            try {
+              // Eliminar en Firebase
+              await deleteAlumno(currentAlumnoId);
+              console.log("Alumno eliminado correctamente");
+
+              // Cerrar el modal después de eliminar
+              if (deleteModal) {
+                deleteModal.classList.remove("flex");
+                deleteModal.classList.add("hidden");
+              }
+
+              // Mostrar el modal de éxito
+            if (successDeleteModal) {
+              successDeleteModal.classList.remove("hidden");
+              successDeleteModal.classList.add("flex");
+            }
+            } catch (error) {
+              console.error("Error al eliminar el alumno:", error);
+              alert("Ocurrió un error al eliminar el alumno.");
+            } finally {
+              currentAlumnoId = null; // Reiniciar el ID actual
+            }
+          }
+        }); 
+      }
+
+
+      // Cerrar modal al hacer clic en el botón "Cancelar"
+    const btnCloseSuccessDelete = document.getElementById("closeDeleteModal");
+
+      if (btnCloseDelete) {
+        btnCloseDelete.addEventListener("click", () => {
+          if (deleteModal) {
+            deleteModal.classList.remove("flex");
+            deleteModal.classList.add("hidden");
+          }
+        });
+      }
+
+      if (btnCloseSuccessDelete) {
+        btnCloseSuccessDelete.addEventListener("click", () => {
+          if (successDeleteModal) {
+            successDeleteModal.classList.remove("flex");
+            successDeleteModal.classList.add("hidden");
+          }
+          // Recargar la página
+          window.location.reload();
+        });
+      }
+    });
+  });
+</script>
