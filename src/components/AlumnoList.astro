@@ -22,7 +22,8 @@ try {
 <ModalExitoDeleteAlumno />
 
 <ul class="bg-white shadow-md rounded-md p-4">
-  <h2 class="text-xl font-semibold mb-2">
+
+  <h2 class="text-2xl font-semibold mb-2">
     Lista de Alumnos ({alumnos.length})
   </h2>
   <h4 class="text-lg font-normal mb-4">
@@ -30,12 +31,13 @@ try {
       alumnos.filter((alumno) => alumno.status === "Activo").length
     })
   </h4>
+
   {
     alumnos.length > 0 ? (
       alumnos.map((alumno) => (
         <div class="flex justify-between items-center mx-auto px-2 md:space-x-0 space-x-2">
           <li class="border-b last:border-none py-2 text-ellipsis overflow-auto flex-grow">
-            <p class="font-medium">{alumno.nombre}</p>
+            <p class="font-medium text-lg">{alumno.nombre}</p>
             <p class="font-medium">{alumno.grado}</p>
             <p class="text-gray-600 text-sm">{alumno.email || "Sin correo"}</p>
             <p class="text-gray-600 text-sm">
@@ -49,18 +51,20 @@ try {
               type="button"
               data-action="edit"
               data-alumno-id={alumno.id}
-              class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+              class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition flex justify-center"
             >
               Editar
+              <svg class="ml-1" xmlns="http://www.w3.org/2000/svg"  width="20"  height="22"  viewBox="0 0 20 22"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-pencil"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
             </button>
 
             <button
               type="button"
               data-action="delete"
               data-alumno-id={alumno.id}
-              class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+              class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition flex justify-center"
             >
               Eliminar
+              <svg class="ml-1" xmlns="http://www.w3.org/2000/svg"  width="20"  height="22"  viewBox="0 0 20 22"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
             </button>
           </div>
         </div>

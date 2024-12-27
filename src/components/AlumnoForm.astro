@@ -5,21 +5,22 @@ import ModalExitoAlumno from "../components/ModalExitoAlumno.astro";
 ---
 
 <ModalExitoAlumno />
-<div class="">
-  <button
-    id="toggleFormButton"
-    class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition mb-4"
-  >
-    Registrar Alumno
-  </button>
+<div>
+  <div class="flex justify-between items-center mb-4">
+    <button
+      id="toggleFormButton"
+      class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition mb-4"
+    >
+      Registrar Alumno
+    </button>
 
-  <button
-    id="GenerarInforme"
-    class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition mb-4"
-  >
-    Generar Informe
-  </button>
-
+    <button
+      id="GenerarInforme"
+      class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition mb-4"
+    >
+      Generar Informe
+    </button>
+  </div>
   <form id="alumnoForm" class="bg-white shadow-md rounded-md p-4 hidden">
     <h2 class="text-xl font-semibold mb-4">Registrar Alumno</h2>
 
@@ -158,7 +159,6 @@ import ModalExitoAlumno from "../components/ModalExitoAlumno.astro";
         successModal.classList.remove("hidden");
         successModal.classList.add("flex");
 
-        
       } catch (error) {
         console.error("Error al agregar el alumno:", error);
       }
